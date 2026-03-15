@@ -1,0 +1,4 @@
+bin/
+obj/
+appsettings.json
+edgefinder_data.json
