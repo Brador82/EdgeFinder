@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EdgeFinder.Claude/EdgeFinder.Claude.csproj" />
+    <Project Path="src/EdgeFinder.Console/EdgeFinder.Console.csproj" />
+    <Project Path="src/EdgeFinder.Core/EdgeFinder.Core.csproj" />
+    <Project Path="src/EdgeFinder.DataSources/EdgeFinder.DataSources.csproj" />
+  </Folder>
+</Solution>

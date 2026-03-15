@@ -1,19 +1,7 @@
-using EdgeFinder.Models;
+using EdgeFinder.Core.Math;
+using EdgeFinder.Core.Models;
 
-namespace EdgeFinder.Services;
-
-public record EdgeOpportunity(
-    OddsGame Game,
-    int OutcomeIdx,
-    string OutcomeName,
-    double ConsensusProb,
-    int BestPrice,
-    string BestBook,
-    double Edge,
-    double FullKelly,
-    double HalfKelly,
-    decimal BetSize,
-    decimal Payout);
+namespace EdgeFinder.Core.Pipeline;
 
 public static class EdgeScanner
 {
@@ -38,8 +26,8 @@ public static class EdgeScanner
                 var edge = MathEngine.CalcEdge(prob, dec);
                 var fullK = MathEngine.CalcKelly(prob, dec);
                 var halfK = fullK * Config.KellyFraction;
-                var size = Math.Round(Math.Min((decimal)halfK * bankroll, bankroll), 2);
-                var payout = Math.Round(size * (decimal)dec, 2);
+                var size = System.Math.Round(System.Math.Min((decimal)halfK * bankroll, bankroll), 2);
+                var payout = System.Math.Round(size * (decimal)dec, 2);
 
                 opportunities.Add(new EdgeOpportunity(
                     game, i, name, prob, best.Value.Price, best.Value.Book,

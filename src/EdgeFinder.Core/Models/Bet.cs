@@ -1,4 +1,4 @@
-namespace EdgeFinder.Models;
+namespace EdgeFinder.Core.Models;
 
 public class Bet
 {

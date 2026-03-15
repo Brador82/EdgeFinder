@@ -1,17 +1,19 @@
 using System.Net.Http.Json;
-using EdgeFinder.Models;
+using EdgeFinder.Core.Abstractions;
+using EdgeFinder.Core.Models;
 
-namespace EdgeFinder.Services;
+namespace EdgeFinder.DataSources.Sports;
 
-public class OddsService
+public class OddsService : IOddsService
 {
-    private readonly HttpClient _http = new();
+    private readonly HttpClient _http;
     private readonly string _apiKey;
 
     public string? RequestsRemaining { get; private set; }
 
-    public OddsService(string apiKey)
+    public OddsService(HttpClient http, string apiKey)
     {
+        _http = http;
         _apiKey = apiKey;
     }
 

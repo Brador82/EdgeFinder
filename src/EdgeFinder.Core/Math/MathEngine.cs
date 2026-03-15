@@ -1,14 +1,14 @@
-using EdgeFinder.Models;
+using EdgeFinder.Core.Models;
 
-namespace EdgeFinder.Services;
+namespace EdgeFinder.Core.Math;
 
 public static class MathEngine
 {
     public static double AmToDec(int am) =>
-        am > 0 ? am / 100.0 + 1 : 100.0 / Math.Abs(am) + 1;
+        am > 0 ? am / 100.0 + 1 : 100.0 / System.Math.Abs(am) + 1;
 
     public static double AmToImpl(int am) =>
-        am > 0 ? 100.0 / (am + 100) : Math.Abs(am) / (Math.Abs(am) + 100.0);
+        am > 0 ? 100.0 / (am + 100) : System.Math.Abs(am) / (System.Math.Abs(am) + 100.0);
 
     public static double GetConsensusProb(OddsGame game, int outcomeIdx)
     {
@@ -52,12 +52,12 @@ public static class MathEngine
     {
         var b = dec - 1;
         if (b <= 0 || p <= 0 || p >= 1) return 0;
-        return Math.Max(0, (b * p - (1 - p)) / b);
+        return System.Math.Max(0, (b * p - (1 - p)) / b);
     }
 
     public static double CalcEdge(double prob, double dec) => prob * dec - 1;
 
     public static string FmtAm(int am) => am > 0 ? $"+{am}" : $"{am}";
     public static string FmtPct(double n, int d = 1) => $"{(n * 100).ToString($"F{d}")}%";
-    public static string FmtUsd(decimal n) => $"${Math.Abs(n):F2}";
+    public static string FmtUsd(decimal n) => $"${System.Math.Abs(n):F2}";
 }
