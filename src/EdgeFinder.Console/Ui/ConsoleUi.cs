@@ -11,14 +11,16 @@ public class ConsoleUi
     private readonly AppState _state;
     private readonly IOddsService _odds;
     private readonly IStateStore _store;
+    private readonly AskUi? _askUi;
     private List<OddsGame> _games = [];
     private string _sportKey = "basketball_nba";
 
-    public ConsoleUi(AppState state, IOddsService odds, IStateStore store)
+    public ConsoleUi(AppState state, IOddsService odds, IStateStore store, AskUi? askUi = null)
     {
         _state = state;
         _odds = odds;
         _store = store;
+        _askUi = askUi;
     }
 
     public async Task RunAsync()
@@ -28,8 +30,9 @@ public class ConsoleUi
             System.Console.Clear();
             PrintHeader();
             System.Console.WriteLine();
-            System.Console.WriteLine("  [1] Scanner    [2] Queue ({0})    [3] Ledger    [4] Quit",
-                _state.Queue.Count);
+            var askLabel = _askUi != null ? "  [5] Ask" : "";
+            System.Console.WriteLine("  [1] Scanner    [2] Queue ({0})    [3] Ledger    [4] Quit{1}",
+                _state.Queue.Count, askLabel);
             System.Console.WriteLine();
             System.Console.Write("  > ");
             var input = System.Console.ReadLine()?.Trim();
@@ -40,6 +43,7 @@ public class ConsoleUi
                 case "2": QueueMenu(); break;
                 case "3": LedgerMenu(); break;
                 case "4": return;
+                case "5" when _askUi != null: await _askUi.RunAsync(); break;
             }
         }
     }

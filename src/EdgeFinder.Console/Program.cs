@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using EdgeFinder.Core.Abstractions;
+using EdgeFinder.Core.Pipeline;
+using EdgeFinder.Claude;
 using EdgeFinder.DataSources.Persistence;
 using EdgeFinder.DataSources.Sports;
+using EdgeFinder.DataSources.Registry;
 using EdgeFinder.Console.Ui;
 
 var config = new ConfigurationBuilder()
@@ -10,14 +12,14 @@ var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true)
     .Build();
 
-var apiKey = Environment.GetEnvironmentVariable("ODDS_API_KEY")
-          ?? config["OddsApiKey"]
-          ?? "";
+var oddsApiKey = Environment.GetEnvironmentVariable("ODDS_API_KEY")
+              ?? config["OddsApiKey"]
+              ?? "";
 
-if (string.IsNullOrWhiteSpace(apiKey))
+if (string.IsNullOrWhiteSpace(oddsApiKey))
 {
     Console.WriteLine();
-    Console.WriteLine("  No API key found.");
+    Console.WriteLine("  No Odds API key found.");
     Console.WriteLine("  Set the ODDS_API_KEY environment variable");
     Console.WriteLine("  or add your key to appsettings.json");
     Console.WriteLine();
@@ -25,16 +27,42 @@ if (string.IsNullOrWhiteSpace(apiKey))
     return;
 }
 
-var services = new ServiceCollection();
+var anthropicApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")
+                   ?? config["AnthropicApiKey"]
+                   ?? "";
 
-services.AddSingleton<IStateStore>(new JsonStateStore());
-services.AddHttpClient<IOddsService, OddsService>((http) => new OddsService(http, apiKey));
-
-var provider = services.BuildServiceProvider();
-
-var store = provider.GetRequiredService<IStateStore>();
+// Services
+var store = new JsonStateStore() as IStateStore;
 var state = store.Load();
-var odds = provider.GetRequiredService<IOddsService>();
+var oddsHttp = new HttpClient();
+var oddsService = new OddsService(oddsHttp, oddsApiKey);
+IOddsService odds = oddsService;
 
-var ui = new ConsoleUi(state, odds, store);
+// Wire up Ask mode if Anthropic key is available
+AskUi? askUi = null;
+
+if (!string.IsNullOrWhiteSpace(anthropicApiKey))
+{
+    var claudeHttp = new HttpClient();
+    var claudeClient = new ClaudeClient(claudeHttp, anthropicApiKey);
+    var analyzer = new ClaudeQueryAnalyzer(claudeClient);
+    var engine = new ClaudeProbabilityEngine(claudeClient);
+
+    var registry = new DataSourceRegistry();
+    registry.Register(new OddsApiSource(oddsService));
+
+    var pipeline = new QueryPipeline(analyzer, registry, engine);
+    askUi = new AskUi(pipeline);
+}
+else
+{
+    Console.ForegroundColor = ConsoleColor.DarkYellow;
+    Console.WriteLine("  Note: No Anthropic API key found. Ask mode disabled.");
+    Console.WriteLine("  Add AnthropicApiKey to appsettings.json to enable it.");
+    Console.ResetColor();
+    Console.WriteLine();
+    Thread.Sleep(2000);
+}
+
+var ui = new ConsoleUi(state, odds, store, askUi);
 await ui.RunAsync();
