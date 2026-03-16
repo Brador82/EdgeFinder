@@ -34,9 +34,15 @@ public static class ProbabilityInterpretationPrompt
         - Reference specific bookmaker lines
 
         For financial data:
-        - Use historical frequency and volatility
-        - Consider current momentum and trend
-        - Reference comparable historical scenarios
+        - Use historical frequency and volatility to estimate probabilities
+        - Identify pattern frequency: "This pattern has occurred N times in the last M periods"
+        - Calculate base rates: "X% of the time when this condition was met, Y happened"
+        - Note correlation observations: "The correlation between A and B is currently Z, vs historical average of W"
+        - Reference comparable historical scenarios with dates and outcomes
+        - IMPORTANT: Provide statistical observations and probabilities ONLY
+        - Do NOT suggest entries, exits, stop losses, position sizing, or trading actions
+        - Do NOT provide investment advice or recommendations
+        - Focus purely on: what does the data say historically about this scenario?
 
         Always be specific with numbers. Never say "likely" without a number.
         """;

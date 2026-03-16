@@ -4,6 +4,7 @@ using EdgeFinder.Core.Pipeline;
 using EdgeFinder.Claude;
 using EdgeFinder.DataSources.Persistence;
 using EdgeFinder.DataSources.Sports;
+using EdgeFinder.DataSources.Finance;
 using EdgeFinder.DataSources.Registry;
 using EdgeFinder.Console.Ui;
 
@@ -31,6 +32,10 @@ var anthropicApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")
                    ?? config["AnthropicApiKey"]
                    ?? "";
 
+var alphaVantageKey = Environment.GetEnvironmentVariable("ALPHAVANTAGE_API_KEY")
+                   ?? config["AlphaVantageApiKey"]
+                   ?? "";
+
 // Services
 var store = new JsonStateStore() as IStateStore;
 var state = store.Load();
@@ -50,6 +55,12 @@ if (!string.IsNullOrWhiteSpace(anthropicApiKey))
 
     var registry = new DataSourceRegistry();
     registry.Register(new OddsApiSource(oddsService));
+
+    if (!string.IsNullOrWhiteSpace(alphaVantageKey))
+    {
+        var avHttp = new HttpClient();
+        registry.Register(new AlphaVantageSource(avHttp, alphaVantageKey));
+    }
 
     var pipeline = new QueryPipeline(analyzer, registry, engine);
     askUi = new AskUi(pipeline);

@@ -10,7 +10,7 @@ A .NET 10 console application that finds +EV (positive expected value) sports be
 EdgeFinder.slnx
 src/
   EdgeFinder.Core/          ← Shared: models, math, abstractions, pipeline
-  EdgeFinder.DataSources/   ← OddsService, JsonStateStore, OddsApiSource, DataSourceRegistry
+  EdgeFinder.DataSources/   ← OddsService, AlphaVantageSource, JsonStateStore, DataSourceRegistry
   EdgeFinder.Claude/        ← Claude API client, QueryAnalyzer, ProbabilityEngine
   EdgeFinder.Console/       ← Console app entry point and UI
 ```
@@ -35,15 +35,17 @@ API keys go in `src/EdgeFinder.Console/appsettings.json` (gitignored):
 ```json
 {
   "OddsApiKey": "your-odds-api-key",
-  "AnthropicApiKey": "your-anthropic-api-key"
+  "AnthropicApiKey": "your-anthropic-api-key",
+  "AlphaVantageApiKey": "your-alphavantage-key"
 }
 ```
 
-Or via environment variables: `ODDS_API_KEY`, `ANTHROPIC_API_KEY`.
+Or via environment variables: `ODDS_API_KEY`, `ANTHROPIC_API_KEY`, `ALPHAVANTAGE_API_KEY`.
 
 ## External APIs
 
 - **The Odds API** (https://the-odds-api.com) — live sports odds, h2h markets, American format
+- **Alpha Vantage** (https://alphavantage.co) — stocks, forex, crypto, indices (25 free calls/day)
 - **Anthropic Claude API** — query analysis and probability interpretation (uses claude-sonnet-4-20250514)
 
 ## Conventions
@@ -54,3 +56,4 @@ Or via environment variables: `ODDS_API_KEY`, `ANTHROPIC_API_KEY`.
 - No third-party Claude SDK — raw HttpClient + System.Text.Json
 - State persisted to `edgefinder_data.json` via JsonStateStore
 - `appsettings.json` and `edgefinder_data.json` are gitignored
+- Finance features provide statistical observations and probabilities ONLY — no trading advice, entries/exits, or position sizing

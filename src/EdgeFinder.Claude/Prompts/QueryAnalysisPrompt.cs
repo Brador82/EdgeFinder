@@ -34,5 +34,25 @@ public static class QueryAnalysisPrompt
 
         User: "Chiefs or Bills this weekend?"
         {"domain":"sports","entities":["Chiefs","Bills"],"timeFrame":"this week","requiredDataTypes":["odds","h2h_odds"],"normalizedQuestion":"What are the probabilities for Chiefs vs Bills this weekend based on current odds?"}
+
+        User: "NQ retraced 30% — does it continue?"
+        {"domain":"finance","entities":["QQQ","NASDAQ"],"timeFrame":null,"requiredDataTypes":["stock_price","historical_prices","intraday"],"normalizedQuestion":"When the Nasdaq retraces 30% of a leg and holds, what is the historical probability it continues for another 50% of the initial leg?"}
+
+        User: "EUR/GBP correlation breaking down?"
+        {"domain":"finance","entities":["EUR","GBP"],"timeFrame":null,"requiredDataTypes":["forex","historical_prices"],"normalizedQuestion":"Is the EUR/GBP correlation diverging from its historical norm, and what is the probability of reversion?"}
+
+        User: "Bitcoin breaks 70k — does it hold?"
+        {"domain":"finance","entities":["BTC","Bitcoin"],"timeFrame":null,"requiredDataTypes":["crypto","historical_prices"],"normalizedQuestion":"When Bitcoin breaks above a major round number like 70,000, what is the historical probability it holds above that level?"}
+
+        For finance questions, map entities to their common ticker symbols:
+        - S&P 500 / SPX / ES → SPY
+        - Nasdaq / NQ → QQQ
+        - Dow / DJIA → DIA
+        - For forex pairs, split into from_currency and to_currency (e.g., EUR/GBP → EUR and GBP)
+        - For crypto, use the base symbol (BTC, ETH, etc.)
+
+        IMPORTANT: For finance domain, the system provides statistical observations and historical probabilities ONLY.
+        It does NOT provide trading advice, entry/exit points, or position sizing recommendations.
+        Focus on: historical frequency, pattern probability, correlation analysis, base rates.
         """;
 }
